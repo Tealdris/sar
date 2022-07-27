@@ -1,0 +1,38 @@
+---
+- name: install docker swarm
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: Check and print linux dist
+    debug: var=ansible_os_family
+
+  - name: Init swarm on the first node
+    community.general.docker_swarm:
+      state: present
+      advertise_addr: "{{ ansible_host }}"
+    register: result
+    when: ansible_os_family == "Debian"
+
+  - name: Get the worker join-token.
+    shell: docker swarm join-token worker | grep do
+    changed_when: false
+    register: docker_worker_token
+    delegate_facts: true
+    when: "'fornt-ub' in group_names"
+    when: ansible_os_family == "Debian"
+
+  - set_fact: 
+      string_to_echo: "{{docker_worker_token.stdout}}"
+    when: ansible_os_family == "Debian"
+
+- hosts: "linux-lx"
+  user: ec2-user
+  become: yes
+
+  tasks:
+
+    - name: Join the pending Swarm worker nodes.
+      command: "{{hostvars ['linux-ub']['string_to_echo']}}" 
+      when: ansible_os_family == "RedHat"

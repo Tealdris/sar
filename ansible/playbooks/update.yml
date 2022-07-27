@@ -1,0 +1,12 @@
+---
+
+- name: update 
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: update
+    shell: apt update
+
+  - name: upgrade
+    shell: apt upgrade -y
