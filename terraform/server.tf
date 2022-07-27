@@ -19,7 +19,7 @@ resource "aws_key_pair" "kp" {
 }
 
 resource "aws_instance" "server" {
-    ami = "ami-0231217be14a6f3ba"
+    ami = "ami-0fb653ca2d3203ac1"
     instance_type = "t2.micro"
     vpc_security_group_ids = [aws_security_group.server.id]
     key_name = aws_key_pair.kp.key_name
